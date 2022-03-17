@@ -12,6 +12,7 @@ func StartRoute() *gin.Engine {
 	router.POST("/orders", controller.CreateItems)
 	router.GET("/orders", controller.GetItems)
 	router.DELETE("/orders/:orderID", controller.DeleteItems)
+	router.PUT("/orders/:orderID", controller.UpdateItems)
 
 	return router
 }

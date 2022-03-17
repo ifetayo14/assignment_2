@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func CreateItems(c *gin.Context) {
@@ -94,4 +95,29 @@ func DeleteItems(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Data Deleted",
 	})
+}
+
+func UpdateItems(c *gin.Context) {
+	db := config.GetDB()
+
+	strId := c.Param("orderID")
+	id, _ := strconv.Atoi(strId)
+
+	var orders = structs.Orders{}
+
+	if err := c.ShouldBindJSON(&orders); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	updateOrder := structs.Orders{
+		ID:           uint(id),
+		CustomerName: orders.CustomerName,
+		OrderedAt:    orders.OrderedAt,
+		Item:         orders.Item,
+	}
+
+	db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&updateOrder)
+
+	c.JSON(http.StatusOK, updateOrder)
 }
