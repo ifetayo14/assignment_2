@@ -16,7 +16,7 @@ import (
 func CreateItems(c *gin.Context) {
 	var (
 		items  []structs.Items
-		orders structs.Orders
+		orders structs.CreateOrders
 	)
 
 	db := config.GetDB()
@@ -26,15 +26,20 @@ func CreateItems(c *gin.Context) {
 		return
 	}
 
-	db.Create(&orders)
-	orderID := orders.ID
+	insertOrder := structs.Orders{
+		CustomerName: orders.CustomerName,
+		OrderedAt:    orders.OrderedAt,
+	}
+
+	db.Create(&insertOrder)
+	orderID := insertOrder.ID
 
 	for _, v := range orders.Item {
 		item := structs.Items{
 			ItemCode:    v.ItemCode,
 			Description: v.Description,
 			Quantity:    v.Quantity,
-			OrderId:     orderID,
+			OrderId:     insertOrder.ID,
 		}
 
 		items = append(items, item)
